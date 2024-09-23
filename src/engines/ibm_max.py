@@ -21,7 +21,7 @@ class IBMMaxModerationEngine(IModerationEngine):
         purge_conditions = (
             len(detected_toxic_labels) >= 4,
             "severe_toxic" in detected_toxic_labels,
-            predictions['toxic'] >= 0.98 and len(detected_toxic_labels) <= 2
+            predictions['toxic'] >= 0.98 and len(detected_toxic_labels) > 2
         )
         return any(purge_conditions)
 

@@ -1,10 +1,12 @@
+import os
 from src.engines.base import IModerationEngine
 import httpx
 
 
 class IBMMaxModerationEngine(IModerationEngine):
     def __init__(self, httpx_client: httpx.AsyncClient) -> None:
-        CONTAINER_ADDR = "http://localhost:5000"
+        CONTAINER_HOST = os.environ.get("MAX_COMMENT_CLASSIFIER_HOST", "localhost")
+        CONTAINER_ADDR = f"http://{CONTAINER_HOST}:5000"
         self.PREDICTION_ENDPOINT = CONTAINER_ADDR + "/model/predict"
         self.client = httpx_client
 
@@ -19,7 +21,7 @@ class IBMMaxModerationEngine(IModerationEngine):
         purge_conditions = (
             len(detected_toxic_labels) >= 4,
             "severe_toxic" in detected_toxic_labels,
-            predictions['toxic'] >= 0.98
+            predictions['toxic'] >= 0.98 and len(detected_toxic_labels) <= 2
         )
         return any(purge_conditions)
 

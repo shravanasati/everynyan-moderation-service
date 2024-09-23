@@ -1,0 +1,14 @@
+services:
+  ibmmaxmodel:
+    image: quay.io/codait/max-toxic-comment-classifier
+    ports:
+      - "5000:5000"
+    restart: always
+
+  moderation_service:
+    image: shravanasati/everynyan-moderation-service
+    ports:
+      - "80:8000"
+    environment:
+      - MAX_COMMENT_CLASSIFIER_HOST=ibmmaxmodel
+    restart: always

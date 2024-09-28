@@ -4,11 +4,11 @@ import httpx
 
 
 class IBMMaxModerationEngine(IModerationEngine):
-    def __init__(self, httpx_client: httpx.AsyncClient) -> None:
+    def __init__(self) -> None:
         CONTAINER_HOST = os.environ.get("MAX_COMMENT_CLASSIFIER_HOST", "localhost")
         CONTAINER_ADDR = f"http://{CONTAINER_HOST}:5000"
         self.PREDICTION_ENDPOINT = CONTAINER_ADDR + "/model/predict"
-        self.client = httpx_client
+        self.client = httpx.AsyncClient()
 
     async def should_purge(self, text: str) -> bool:
         resp = await self.client.post(self.PREDICTION_ENDPOINT, json={"text": [text]})
@@ -25,16 +25,18 @@ class IBMMaxModerationEngine(IModerationEngine):
         )
         return any(purge_conditions)
 
+    async def close(self):
+        await self.client.aclose()
+
 
 async def test():
-    async with httpx.AsyncClient() as client:
-        engine = IBMMaxModerationEngine(client)
-        print(await engine.should_purge("don't let those bitch ass hoes lie to you"))
-        print(
-            await engine.should_purge(
-                "bitch ass nigga go die in a shitty hole alone no one will every help you"
-            )
+    engine = IBMMaxModerationEngine()
+    print(await engine.should_purge("don't let those bitch ass hoes lie to you"))
+    print(
+        await engine.should_purge(
+            "bitch ass nigga go die in a shitty hole alone no one will every help you"
         )
+    )
 
 
 if __name__ == "__main__":

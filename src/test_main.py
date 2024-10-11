@@ -6,11 +6,13 @@ import pytest_check as check
 
 
 def test_moderation():
+    N = 1000
     dataset = Path(__file__).parent / "labeled_data.csv"
-    df = pd.read_csv(dataset).sample(10)
+    df = pd.read_csv(dataset).sample(N)
     tweets = df["tweet"]
     classes = df["class"]
     expected_purges = classes.apply(lambda x: x != 0)
+    failures = 0
 
     with TestClient(app) as client:
         for i in df.index:
@@ -18,4 +20,8 @@ def test_moderation():
             expected_purge = expected_purges[i]
             response = client.post("/moderate", json={"content": content})
             check.equal(response.status_code, 200)
-            check.equal(response.json()["purge"], expected_purge)
+            if response.json()["purge"] != expected_purge:
+                failures += 1
+                check.equal(response.json()["purge"], expected_purge)
+
+    print(failures / N * 100, "% failure rate")

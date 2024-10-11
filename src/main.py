@@ -20,6 +20,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# todo translation
+# todo strip markdown
+
 
 class ModerationRequest(BaseModel):
     content: str

@@ -6,5 +6,5 @@ class IModerationEngine(ABC):
         pass
 
     @abstractmethod
-    def should_purge(self, text: str):
+    def should_purge(self, text: str) -> bool:
         pass

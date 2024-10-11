@@ -15,7 +15,7 @@ class BertModerationEngine(IModerationEngine):
         self.pipeline = TextClassificationPipeline(model=model, tokenizer=tokenizer)
         # print(
         #     self.pipeline(
-        #         "I really like purva from cse-a class"
+        #         "I really like her from that class"
         #     )
         # )
 
